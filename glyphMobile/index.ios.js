@@ -21,6 +21,15 @@ var regionText = {
   longitudeDelta: '0',
 };
 
+var markers = [
+{
+  latitude: 37.7749300,
+  longitude: -122.4194200,
+  title: 'San Francisco',
+  subtitle: 'Best Place on Earth',
+}
+];
+
 var MapRegionInput = React.createClass({
   region: React.PropTypes.shape({
       latitude: React.PropTypes.number.isRequired,
@@ -62,7 +71,10 @@ var GlyphMap = React.createClass({
   render: function() {
     return (
       <View>
-        <MapView style={styles.map} showsUserLocation={true}>
+        <MapView
+          style={styles.map} 
+          showsUserLocation={true} 
+          annotations={markers}>
         </MapView>
         <MapRegionInput style={styles.regionInfo}>
         </MapRegionInput>
