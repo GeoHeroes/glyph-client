@@ -68,14 +68,28 @@ var MapRegionInput = React.createClass({
 });
 
 var GlyphMap = React.createClass({
+  getInitialState: function() {
+    return {
+      loading: true,
+      name: '',
+      address: '',
+      markers: [],
+      region: {
+        latitude: 37.7749300,
+        longitude: -122.4194200,
+      }
+    };
+  },
   render: function() {
     return (
       <View>
         <MapView
           style={styles.map} 
-          showsUserLocation={true} 
-          annotations={markers}>
-        </MapView>
+          showsUserLocation={true}
+          region={this.state.region} 
+          annotations={this.state.markers}
+          maxDelta={.15} 
+        />
         <MapRegionInput style={styles.regionInfo}>
         </MapRegionInput>
       </View>
