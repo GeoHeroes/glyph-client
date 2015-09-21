@@ -1,113 +1,177 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- */
 'use strict';
 
 var React = require('react-native');
 var {
   MapView,
-  TextInput,
-  AppRegistry,
+  Modal,
   StyleSheet,
+  SwitchIOS,
   Text,
-  View
+  TouchableHighlight,
+  View,
+  AppRegistry,
+  TextInput,
 } = React;
 
-var regionText = {
-  latitude: '0',
-  longitude: '0',
-  latitudeDelta: '0',
-  longitudeDelta: '0',
-};
+exports.displayName = (undefined: ?string);
+exports.framework = 'React';
+exports.title = '<Modal>';
+exports.description = 'Component for presenting modal views.';
 
-var markers = [
-{
-  latitude: 37.7749300,
-  longitude: -122.4194200,
-  title: 'San Francisco',
-  subtitle: 'Best Place on Earth',
-}
-];
-
-var MapRegionInput = React.createClass({
-  region: React.PropTypes.shape({
-      latitude: React.PropTypes.number.isRequired,
-      longitude: React.PropTypes.number.isRequired,
-      latitudeDelta: React.PropTypes.number.isRequired,
-      longitudeDelta: React.PropTypes.number.isRequired,
-  }),
-
-  getInitialState: function() {
+var Button = React.createClass({
+  getInitialState() {
     return {
-      region: {
-        latitude: 0,
-        longitude: 0,
-        latitudeDelta: 0,
-        longitudeDelta: 0,
-      }
+      active: false,
     };
   },
 
-  componentWillReceiveProps: function(nextProps) {
-    this.setState({
-      region: nextProps.region || this.getInitialState().region
-    });
+  _onHighlight() {
+    this.setState({active: true});
   },
 
-  render: function() {
-    return (
-      <View>
-        <Text>
-          {'Region Info: '}
-          {this.state.region}
-        </Text>
-      </View>
-    );
+  _onUnhighlight() {
+    this.setState({active: false});
   },
-});
 
-var GlyphMap = React.createClass({
-  getInitialState: function() {
-    return {
-      loading: true,
-      name: '',
-      address: '',
-      markers: [],
-      region: {
-        latitude: 37.7749300,
-        longitude: -122.4194200,
-      }
+  render() {
+    var colorStyle = {
+      color: this.state.active ? '#fff' : '#000',
     };
-  },
-  render: function() {
     return (
-      <View>
-        <MapView
-          style={styles.map} 
-          showsUserLocation={true}
-          region={this.state.region} 
-          annotations={this.state.markers}
-          maxDelta={.15} 
-        />
-        <MapRegionInput style={styles.regionInfo}>
-        </MapRegionInput>
-      </View>
+      <TouchableHighlight
+        onHideUnderlay={this._onUnhighlight}
+        onPress={this.props.onPress}
+        onShowUnderlay={this._onHighlight}
+        style={[styles.button, this.props.style]}
+        underlayColor="#a9d9d4">
+          <Text style={[styles.buttonText, colorStyle]}>{this.props.children}</Text>
+      </TouchableHighlight>
     );
   }
 });
 
+var GlyphMobile = React.createClass({
+  getInitialState() {
+    return {
+      animated: true,
+      modalVisible: false,
+      transparent: false,
+      loading: true,
+      name: '',
+      address: '',
+      markers: [],
+      userAnnotation: {
+        title: 'New Glyph',
+      },   
+      region: {
+        latitude: 37.7749300,
+        longitude: -122.4194200,
+      },
+    };
+  },
+
+  _setModalVisible: function(visible) {
+    this.setState({modalVisible: visible});
+  },
+
+  handleRegionChange: function(region) {
+    this.setState({
+      userAnnotation: {
+        title: this.state.userAnnotation.title,
+        latitude: region.latitude,
+        longitude: region.longitude,
+      }
+    });
+  },
+
+  render() {
+    return (
+      <View>
+         <MapView
+          style={styles.map} 
+          showsUserLocation={true}
+          region={this.state.region} 
+          annotations={this.state.markers.concat(this.state.userAnnotation)}
+          maxDelta={.15}
+          onRegionChange={this.handleRegionChange}
+          onAnnotationPress={this._setModalVisible.bind(this, true)}
+        >
+        </MapView>
+        <Modal
+          animated={this.state.animated}
+          transparent={this.state.transparent}
+          visible={this.state.modalVisible}>
+          <View style={[styles.container]}>
+            <View style={[styles.innerContainer]}>
+              <Text>This modal was presented {this.state.animated ? 'with' : 'without'} animation.</Text>
+              <TextInput
+                style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+                onChangeText={(text) => this.setState({text})}
+                value={this.state.text}
+              />
+              <Button
+                onPress={this._setModalVisible.bind(this, false)}
+                style={styles.modalButton}>
+                Close
+              </Button>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    );
+  },
+});
+
+exports.examples = [
+  {
+    title: 'Glyph Mobile',
+    description: 'Glyph Map with Modal',
+    render: () => <GlyphMobile />,
+  },
+];
+
 var styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+  },
+  innerContainer: {
+    borderRadius: 10,
+  },
+  row: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  rowTitle: {
+    flex: 1,
+    fontWeight: 'bold',
+  },
+  button: {
+    borderRadius: 5,
+    flex: 1,
+    height: 44,
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  buttonText: {
+    fontSize: 18,
+    margin: 5,
+    textAlign: 'center',
+  },
+  modalButton: {
+    marginTop: 10,
+  },
   map: {
-    height: 400,
+    height: 200,
     margin: 10,
     top: 20,
     borderWidth: 1,
     borderColor: '#000000',
   },
-  regionInfo: {
-    top: 500,
-  },
 });
 
-AppRegistry.registerComponent('glyphMobile', () => GlyphMap);
+
+AppRegistry.registerComponent('glyphMobile', () => GlyphMobile);
