@@ -5,13 +5,14 @@
 'use strict';
 
 var React = require('react-native');
+var Modal = require('react-native-modal');
 var {
   MapView,
   TextInput,
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
 } = React;
 
 var regionText = {
@@ -30,43 +31,6 @@ var markers = [
 }
 ];
 
-var MapRegionInput = React.createClass({
-  region: React.PropTypes.shape({
-      latitude: React.PropTypes.number.isRequired,
-      longitude: React.PropTypes.number.isRequired,
-      latitudeDelta: React.PropTypes.number.isRequired,
-      longitudeDelta: React.PropTypes.number.isRequired,
-  }),
-
-  getInitialState: function() {
-    return {
-      region: {
-        latitude: 0,
-        longitude: 0,
-        latitudeDelta: 0,
-        longitudeDelta: 0,
-      }
-    };
-  },
-
-  componentWillReceiveProps: function(nextProps) {
-    this.setState({
-      region: nextProps.region || this.getInitialState().region
-    });
-  },
-
-  render: function() {
-    return (
-      <View>
-        <Text>
-          {'Region Info: '}
-          {this.state.region}
-        </Text>
-      </View>
-    );
-  },
-});
-
 var GlyphMap = React.createClass({
   getInitialState: function() {
     return {
@@ -74,12 +38,17 @@ var GlyphMap = React.createClass({
       name: '',
       address: '',
       markers: [],
+      userAnnotation: {
+        title: 'New Glyph',
+      },   
       region: {
         latitude: 37.7749300,
         longitude: -122.4194200,
-      }
-    };
+      },
+      isModalOpen: false,
+    }
   },
+
   render: function() {
     return (
       <View>
@@ -87,14 +56,53 @@ var GlyphMap = React.createClass({
           style={styles.map} 
           showsUserLocation={true}
           region={this.state.region} 
-          annotations={this.state.markers}
-          maxDelta={.15} 
+          annotations={this.state.markers.concat(this.state.userAnnotation)}
+          maxDelta={.15}
+          onRegionChange={this.handleRegionChange}
+          onRegionChangeComplete={this.handleRegionChangeComplete}
+          onAnnotationPress={this.handleAnnotationPress}
         />
-        <MapRegionInput style={styles.regionInfo}>
-        </MapRegionInput>
+        <Modal
+          isVisible={this.state.isModalOpen}
+          onClose={this.state.closeModal}
+        >
+          <text> Hello world! </text>
+        </Modal>
       </View>
     );
-  }
+  },
+
+  handleRegionChange: function(region) {
+    this.setState({
+      userAnnotation: {
+        title: this.state.userAnnotation.title,
+        latitude: region.latitude,
+        longitude: region.longitude,
+      }
+    });
+  },
+
+  handleRegionChangeComplete: function(region) {
+    console.log(region);
+  },
+
+  handleAnnotationPress: function(annotation) {
+    if (annotation.id === this.state.userAnnotation.id) {
+      this.openModal(); 
+    }
+  },
+
+  openModal: function() {
+    this.setState({
+      openModal: true,
+    });
+  },
+
+  closeModal: function() {
+    this.setState({
+      openModal: false,
+    });
+  },
 });
 
 var styles = StyleSheet.create({
