@@ -24,7 +24,7 @@ To run the development environment application on a native iOS device:
   
   -To fix this create a new main.jsbundle.
   
-  -From your React project's root (/Project), run the following command in a Terminal shell: react-native bundle --minify. If run successfully it will create a new main.jsbundle and drop it in /Project/iOS/.
+  -From the project's root (/Project), run the following command in a Terminal shell: react-native bundle --minify.     -If run successfully it will create a new main.jsbundle and drop it in /Project/iOS/.
   
   -Replace the existing main.jsbundle in /Project/iOS/Project with the one created in /Project/iOS/
   
