@@ -1,6 +1,8 @@
 'use strict';
 
 var React = require('react-native');
+// var fetch = require('fetch');
+
 var {
   MapView,
   Modal,
@@ -59,6 +61,7 @@ var GlyphMobile = React.createClass({
       loading: true,
       name: '',
       address: '',
+      test: "boo",
       markers: [],
       userAnnotation: {
         title: 'New Glyph',
@@ -68,6 +71,63 @@ var GlyphMobile = React.createClass({
         longitude: -122.4194200,
       },
     };
+  },
+
+  componentDidMount: function() {
+    console.log("Mounted bitch");
+    var that = this;
+    fetch('http://ec2-52-11-76-55.us-west-2.compute.amazonaws.com/api/findglyphsradius', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        latitude: 25,
+        longitude: 25,
+        radius: 1,
+      }),
+    })
+    .then(function(response) {
+      console.log(response);
+      this.setState({test: response.responseText});
+    })
+    .catch(function(error) {
+      if (error) {
+        console.log(error);
+      }
+    }).done();
+    // fetch('ec2-52-11-76-55.us-west-2.compute.amazonaws.com/api/findglyphsradius')
+    //   .then((response) => response.json())
+    //   .then((responseData) => {
+    //     console.log(responseData);
+    //   })
+    //   .catch(function(error) {
+    //     console.log(error);
+    //   })
+    //   .done();
+    // var request = new XMLHttpRequest();
+    // request.open('POST', encodeURI('ec2-52-11-76-55.us-west-2.compute.amazonaws.com/api/findglyphsradius'));
+    // request.setRequestHeader("Content-Type","application/json");
+    // request.setRequestHeader("Accept","application/json");
+    // request.onreadystatechange = (e) => {
+    //   console.log(e);
+    //   if (request.readyState !== 4) {
+    //     return;
+    //   }
+
+    //   if (request.status === 200) {
+    //     console.log('success', request.responseText);
+    //   } else {
+    //     console.log(request.responseText);
+    //   }
+    // };
+
+    // request.send(JSON.stringify({
+    //     latitude: 25,
+    //     longitude: 25,
+    //     radius: 1,
+    //   }));
   },
 
   _setModalVisible: function(visible) {
@@ -84,6 +144,28 @@ var GlyphMobile = React.createClass({
     });
   },
 
+  getGylphsRadius: function(longitude, latitude, radius) {
+    console.log("Fetching...");
+    // fetch('ec2-52-11-76-55.us-west-2.compute.amazonaws.com/api/findglyphsradius', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Accept': 'application/json',
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     latitude: longitude,
+    //     longitude: latitude,
+    //     radius: radius,
+    //   }),
+    // })
+    // .then(function(response) {
+    //   console.log(response);
+    // })
+    // .catch(function(error) {
+    //   console.log(error);
+    // });
+  },
+
   render() {
     return (
       <View>
@@ -97,6 +179,7 @@ var GlyphMobile = React.createClass({
           onAnnotationPress={this._setModalVisible.bind(this, true)}
         >
         </MapView>
+         <Text>{this.state.test}</Text>
         <Modal
           animated={this.state.animated}
           transparent={this.state.transparent}
