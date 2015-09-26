@@ -76,7 +76,7 @@ var GlyphMobile = React.createClass({
   componentDidMount: function() {
     console.log("Mounted bitch");
     var that = this;
-    fetch('ec2-52-11-76-55.us-west-2.compute.amazonaws.com/api/findglyphsradius', {
+    fetch('http://ec2-52-11-76-55.us-west-2.compute.amazonaws.com/api/findglyphsradius', {
       method: 'post',
       headers: {
         'Accept': 'application/json',
