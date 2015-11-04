@@ -1,7 +1,7 @@
 'use strict';
 
 var React = require('react-native');
-// var fetch = require('fetch');
+var fetch = require('fetch');
 
 var {
   MapView,
